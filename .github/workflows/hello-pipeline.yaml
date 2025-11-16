@@ -1,4 +1,4 @@
-name: hello runner
+name: Hello pipeline
 
 on:
   push:
@@ -6,16 +6,29 @@ on:
       - main
 
 jobs:
-  runner-job-definition:
+  pipeline-job-definition:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show runner info
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
         run: |
-          echo "=== Current Directory ==="
-          pwd
-          echo
-          echo "=== Directory Contents ==="
-          ls -al
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn pytest requests
+
+      - name: Run unit tests
+        run: |
+          set +e
+          pytest -v unit-testing
+          STATUS=$?
+          set -e
+          if [ $STATUS -ne 0 ]; then
+            echo "pipeline failed: some unit tests did not pass" > result.txt
+            exit 1
+          fi
