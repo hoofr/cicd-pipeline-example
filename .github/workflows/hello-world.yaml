@@ -1,4 +1,4 @@
-name: Hello runner
+name: Hello artifact
 
 on:
   push:
@@ -6,22 +6,24 @@ on:
       - main
 
 jobs:
-  runner-job-definition:
+  artifact-job-definition:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Show runner info
+      - name: Gather directory info
         run: |
-          echo "=== CPU Info ==="
-          lscpu
-          echo
-          echo "=== Memory Info ==="
-          free -h
-          echo
-          echo "=== Current Directory ==="
-          pwd
-          echo
-          echo "=== Directory Contents ==="
-          ls -al
+          echo "Collecting directory info..."
+
+          DIR=$(pwd)
+
+          # Create markdown output
+          echo "**Working Directory**" >> directory-info.md
+          echo "$DIR" >> directory-info.md
+
+          echo "Markdown report generated"
+          cat directory-info.md
+
+      - name: Upload directory info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: directory-info.md
