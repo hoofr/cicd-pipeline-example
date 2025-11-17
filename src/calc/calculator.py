@@ -38,7 +38,7 @@ class Calculator:
 
             raise ValueError("Cannot calculate square root of a negative number")
         
-        return 2 * math.sqrt(x)
+        return math.sqrt(x)
 
     #-----------------------------------------------------------
 
